@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('users/register', [UserController::class, 'register']);
 Route::post('users/login', [UserController::class, 'login']);
-Route::get('users', [UserController::class, 'index']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('users', [UserController::class, 'index']);
     Route::get('users/me', [UserController::class, 'me']);
     Route::post('users/logout', [UserController::class, 'logout']);
     Route::patch('users/{id}', [UserController::class, 'update']);
