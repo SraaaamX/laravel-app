@@ -1,0 +1,29 @@
+MVC:
+    Modèle:
+        Fichier qui schématise la structure des données
+        Exemple:
+
+            User:
+                - id
+                - name
+                - email
+                ...
+    Vue:
+        Fichier qui récupère des données et qui les affiche à l'utilisateur.
+        Souvent utilisé avec un moteur de templating (Liquid, Blade, Twig...)
+        
+    Routes:
+        Ce qui définit sur quel chemin je fais quelle requête.
+        (Pour un webservice, c'est ce qui définit les endpoints de l'API)
+
+    Contrôleur:
+        Fichier intermédiaire entre le modèle et la vue. C'est lui qui reçoit les requêtes de l'utilisateur et qui définit ce que l'on fait.
+
+Factories:
+    Fichier qui définit comment générer des objets de façon programmée pour les tests ou pour remplir la base de données.
+
+Migrations:
+    Fichier qui décrit les changements à apporter à la structure de la base de données. Utilisé pour versionner et maintenir la base de données.
+
+Seeders:
+    Fichier utilisé pour insérer des données initiales dans la base de données, souvent pour remplir avec des valeurs par défaut ou pour les tests.
