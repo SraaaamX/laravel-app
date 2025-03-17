@@ -15,7 +15,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/users', [UserController::class, 'index']);
+// Public routes
 Route::post('users/register', [UserController::class, 'register']);
-Route::patch('users/{id}', [UserController::class, 'update']);
-Route::delete('users/{id}', [UserController::class, 'destroy']);
+Route::post('users/login', [UserController::class, 'login']);
+Route::get('users', [UserController::class, 'index']);
+
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('users/me', [UserController::class, 'me']);
+    Route::post('users/logout', [UserController::class, 'logout']);
+    Route::patch('users/{id}', [UserController::class, 'update']);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
+});
