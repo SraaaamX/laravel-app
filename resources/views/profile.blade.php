@@ -112,6 +112,65 @@
                         </form>
                     </div>
                 </div>
+                <div class="card shadow-smooth border-0 mt-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="card-title mb-0">Mes Publications</h4>
+                            <a href="{{ route('posts.create') }}" class="btn btn-primary rounded-pill">
+                                <i class="bi bi-plus-circle me-2"></i>Nouvelle publication
+                            </a>
+                        </div>
+
+                        @if (count(auth()->user()->posts) > 0)
+                            <div class="row">
+                                @foreach (auth()->user()->posts as $post)
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card" style="max-width: 350px;">
+                                            @if ($post->post_resource)
+                                                <img src="{{ asset('storage/' . $post->post_resource) }}"
+                                                    class="card-img-top" alt="Post media"
+                                                    style="max-height: 150px; object-fit: cover;">
+                                            @endif
+                                            <div class="card-body">
+                                                <p class="card-text" style="font-size: 0.8rem;">{{ $post->description }}
+                                                </p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="btn-group" style="font-size: 0.8rem;">
+                                                        <a href="{{ route('posts.edit', $post->id) }}"
+                                                            class="btn btn-sm btn-outline-secondary">
+                                                            <i class="bi bi-pencil me-1"></i>Modifier
+                                                        </a>
+                                                        <form action="{{ route('posts.destroy', $post->id) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger ms-2">
+                                                                <i class="bi bi-trash me-1"></i>Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    <small class="text-muted" style="font-size: 0.8rem;">
+                                                        <i class="bi bi-heart me-1"></i>{{ $post->likesNumber }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-5">
+                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                <p class="mt-3 text-muted">Vous n'avez pas encore de publications.</p>
+                                <a href="{{ route('posts.create') }}" class="btn btn-primary rounded-pill mt-2">
+                                    Créer ma première publication
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

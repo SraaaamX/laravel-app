@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,10 +34,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
     Route::delete('/profile', [UserController::class, 'deleteProfile'])->name('profile.delete');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+    // Posts routes
+    Route::resource('posts', PostController::class);
 });
 
 // Redirection vers accueil si la route n'existe pas
 Route::fallback(function () {
     return redirect()->route('home');
 });
-
