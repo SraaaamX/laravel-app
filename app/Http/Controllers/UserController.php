@@ -41,7 +41,6 @@ class UserController extends Controller
             ]);
 
             $data = [
-                'name' => $request->username, // Use username as name
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -167,7 +166,6 @@ class UserController extends Controller
             }
 
             $data = $validator->validated();
-            $data['name'] = $data['username']; // Set name to be the same as username
 
             if ($request->hasFile('profile_pic')) {
                 try {
