@@ -120,22 +120,43 @@
                     @else
                         <li class="nav-item me-3">
                             <a class="nav-link d-flex align-items-center" href="{{ route('profile') }}">
-                                <i class="bi bi-person-circle me-1"></i> Profil
+                                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger rounded-pill">
-                                    <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-outline-danger rounded-pill" data-bs-toggle="modal"
+                                data-bs-target="#logoutConfirmModal">
+                                <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                            </button>
                         </li>
                     @endguest
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!-- Modal de confirmation de déconnexion -->
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutConfirmModalLabel">Confirmation de déconnexion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir vous déconnecter ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Confirmer la déconnexion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Content -->
     <main class="container py-5">
@@ -187,6 +208,8 @@
             }
         });
     </script>
+
+    @stack('scripts')
 </body>
 
 </html>

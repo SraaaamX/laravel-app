@@ -160,10 +160,10 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()
-                    ->back()
+                return back()
                     ->withErrors($validator)
-                    ->withInput();
+                    ->withInput()
+                    ->with('error', 'Veuillez corriger les erreurs ci-dessous.');
             }
 
             $data = $validator->validated();
@@ -240,6 +240,71 @@ class UserController extends Controller
             return redirect()
                 ->back()
                 ->with('error', 'La suppression du compte a échoué');
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $user = auth()->user();
+
+            $validator = \Validator::make($request->all(), [
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|confirmed',
+                'new_password_confirmation' => 'required|string|min:8'
+            ], [
+                'current_password.required' => 'Le mot de passe actuel est requis',
+                'new_password.required' => 'Le nouveau mot de passe est requis',
+                'new_password.min' => 'Le nouveau mot de passe doit contenir au moins 8 caractères',
+                'new_password.confirmed' => 'Les mots de passe ne correspondent pas',
+                'new_password_confirmation.required' => 'La confirmation du mot de passe est requise',
+                'new_password_confirmation.min' => 'La confirmation du mot de passe doit contenir au moins 8 caractères'
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            // Vérifier si le mot de passe actuel est correct
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()
+                    ->withErrors(['current_password' => 'Le mot de passe actuel est incorrect'])
+                    ->withInput()
+                    ->with('error', 'Le mot de passe actuel est incorrect. Veuillez réessayer.');
+            }
+
+            // Vérifier que le nouveau mot de passe est différent de l'ancien
+            if (Hash::check($request->new_password, $user->password)) {
+                return back()
+                    ->withErrors(['new_password' => 'Le nouveau mot de passe doit être différent de l\'ancien'])
+                    ->withInput()
+                    ->with('error', 'Le nouveau mot de passe doit être différent de l\'ancien. Veuillez choisir un autre mot de passe.');
+            }
+
+            try {
+                // Mettre à jour le mot de passe
+                $user->update([
+                    'password' => Hash::make($request->new_password)
+                ]);
+
+                return back()
+                    ->with('success', 'Mot de passe mis à jour avec succès')
+                    ->with('password_updated', true); // Pour fermer le modal via JS
+
+            } catch (\Exception $e) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Une erreur est survenue lors de la mise à jour du mot de passe.');
+            }
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Une erreur est survenue lors de la mise à jour du mot de passe')
+                ->withInput();
         }
     }
 

@@ -93,6 +93,10 @@
                                         <button type="submit" class="btn btn-primary rounded-pill py-2 hover-lift">
                                             <i class="bi bi-check2-circle me-2"></i>Mettre à jour le profil
                                         </button>
+                                        <button type="button" class="btn btn-warning rounded-pill py-2"
+                                            data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            <i class="bi bi-key me-2"></i>Modifier le mot de passe
+                                        </button>
                                         <button type="button" class="btn btn-danger rounded-pill py-2"
                                             data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
                                             <i class="bi bi-trash me-2"></i>Supprimer le compte
@@ -103,6 +107,60 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de modification du mot de passe -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true" @if ($errors->any() || session('error')) data-bs-backdrop="static" @endif>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Modifier le mot de passe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('profile.updatePassword') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Mot de passe actuel</label>
+                            <input type="password" class="form-control @error('current_password') is-invalid @enderror"
+                                id="current_password" name="current_password" required>
+                            @error('current_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">Nouveau mot de passe</label>
+                            <input type="password" class="form-control @error('new_password') is-invalid @enderror"
+                                id="new_password" name="new_password" required>
+                            @error('new_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Le mot de passe doit contenir au moins 8 caractères</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password_confirmation" class="form-label">Confirmer le nouveau mot de
+                                passe</label>
+                            <input type="password"
+                                class="form-control @error('new_password_confirmation') is-invalid @enderror"
+                                id="new_password_confirmation" name="new_password_confirmation" required>
+                            @error('new_password_confirmation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-warning">Modifier le mot de passe</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -131,3 +189,22 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if ($errors->any() || session('error'))
+                var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+                modal.show();
+            @endif
+
+            @if (session('password_updated'))
+                // Ferme le modal si le mot de passe a été mis à jour avec succès
+                var modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            @endif
+        });
+    </script>
+@endpush
