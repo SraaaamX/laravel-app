@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
+})->name('home');
+
+// Routes publiques
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [UserController::class, 'showLogin'])->name('login');
+    Route::post('/login', [UserController::class, 'login'])->name('login.submit');
+    Route::get('/register', [UserController::class, 'showRegister'])->name('register');
+    Route::post('/register', [UserController::class, 'register'])->name('register.submit');
+});
+
+// Routes protégées
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('profile');
+    Route::post('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 });

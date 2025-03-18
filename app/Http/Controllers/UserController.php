@@ -9,14 +9,23 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    //get all users 
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
     public function index()
     {
         try {
             $users = User::select('id', 'username', 'email')->get();
             return response()->json($users, 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error fetching users'], 500);
+            return response()->json(['message' => 'Erreur lors de la récupération des utilisateurs'], 500);
         }
     }
 
@@ -26,78 +35,90 @@ class UserController extends Controller
             $request->validate([
                 'username' => 'required|string|max:255|unique:users',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
+                'password' => 'required|string|min:8|confirmed',
+                'bio' => 'nullable|string|max:1000',
+                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
-            $user = User::create([
+            $data = [
+                'name' => $request->username, // Use username as name
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-            ]);
+                'bio' => $request->bio
+            ];
 
-            // Revoke any existing tokens that might exist
+            if ($request->hasFile('profile_pic')) {
+                $path = $request->file('profile_pic')->store('profile_pics', 'public');
+                $data['profile_pic'] = $path;
+            }
+
+            $user = User::create($data);
             $user->tokens()->delete();
-
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'User registered successfully',
-                'user' => $user->only(['id', 'username', 'email']),
-                'token' => $token
-            ], 201);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Inscription réussie',
+                    'user' => $user->only(['id', 'username', 'email']),
+                    'token' => $token
+                ], 201);
+            }
+
+            return redirect()->route('login')->with('success', 'Inscription réussie. Vous pouvez maintenant vous connecter.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Erreur de validation',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Registration failed'
-            ], 500);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => "L'inscription a échoué"
+                ], 500);
+            }
+            return redirect()->back()->with('error', "L'inscription a échoué")->withInput();
         }
     }
 
     public function login(Request $request)
     {
-        try {
-            $request->validate([
-                'email' => 'required|string|email',
-                'username' => 'required|string',
-                'password' => 'required|string'
-            ]);
+        $credentials = $request->validate([
+            'email' => 'required|string|email',
+            'username' => 'required|string',
+            'password' => 'required|string'
+        ]);
 
-            $user = User::where('email', $request->email)
-                ->where('username', $request->username)
-                ->first();
+        $user = User::where('email', $credentials['email'])
+            ->where('username', $credentials['username'])
+            ->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'message' => 'Invalid credentials'
-                ], 401);
-            }
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return redirect()
+                ->back()
+                ->withInput($request->except('password'))
+                ->with('error', 'Ces identifiants ne correspondent pas à nos enregistrements.');
+        }
 
-            // Revoke any existing tokens
-            $user->tokens()->delete();
+        Auth::login($user);
+        $request->session()->regenerate();
 
+        if ($request->expectsJson()) {
             $token = $user->createToken('auth_token')->plainTextToken;
-
             return response()->json([
-                'message' => 'Login successful',
+                'message' => 'Connexion réussie',
                 'user' => $user->only(['id', 'username', 'email']),
                 'token' => $token
             ], 200);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Login failed'
-            ], 500);
         }
+
+        return redirect()
+            ->intended(route('profile'))
+            ->with('success', 'Connexion réussie !');
     }
 
     public function me(Request $request)
@@ -105,7 +126,7 @@ class UserController extends Controller
         try {
             if (!Auth::check()) {
                 return response()->json([
-                    'message' => 'Unauthenticated'
+                    'message' => 'Non authentifié'
                 ], 401);
             }
 
@@ -116,78 +137,73 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to fetch user data'
+                'message' => 'Erreur lors de la récupération des données'
             ], 500);
         }
     }
 
-    public function update(Request $request, $id)
+    public function showProfile()
+    {
+        return view('profile');
+    }
+
+    public function updateProfile(Request $request)
     {
         try {
-            $user = User::findOrFail($id);
+            $user = auth()->user();
 
-            // Check if user is updating their own profile
-            if ($request->user()->id != $id) {
-                return response()->json([
-                    'message' => 'Unauthorized to update this profile'
-                ], 403);
-            }
-
-            $data = $request->validate([
-                'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
-                'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-                'password' => 'sometimes|string|min:8',
+            $validator = \Validator::make($request->all(), [
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'bio' => 'nullable|string|max:1000',
+                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
-            if (isset($data['password'])) {
-                $data['password'] = Hash::make($data['password']);
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
-            // Revoke all tokens before update
-            $user->tokens()->delete();
+            $data = $validator->validated();
+            $data['name'] = $data['username']; // Set name to be the same as username
+
+            if ($request->hasFile('profile_pic')) {
+                // Delete old profile picture if it exists
+                if ($user->profile_pic && \Storage::disk('public')->exists($user->profile_pic)) {
+                    \Storage::disk('public')->delete($user->profile_pic);
+                }
+                $data['profile_pic'] = $request->file('profile_pic')->store('profile_pics', 'public');
+            }
 
             $user->update($data);
 
-            // Create new token
-            $token = $user->createToken('auth_token')->plainTextToken;
+            return redirect()
+                ->route('profile')
+                ->with('success', 'Profil mis à jour avec succès');
 
-            return response()->json([
-                'message' => 'Profile updated successfully',
-                'user' => $user->only(['id', 'username', 'email']),
-                'token' => $token
-            ], 200);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Update failed'
-            ], 500);
+            return redirect()
+                ->back()
+                ->with('error', 'Erreur lors de la mise à jour du profil')
+                ->withInput();
         }
     }
 
     public function logout(Request $request)
     {
-        try {
-            // Revoke all tokens
-            $request->user()->tokens()->delete();
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-            return response()->json([
-                'message' => 'Successfully logged out'
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Logout failed'
-            ], 500);
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Déconnexion réussie'], 200);
         }
+
+        return redirect()
+            ->route('home')
+            ->with('success', 'Vous avez été déconnecté avec succès');
     }
 
     public function destroy($id)
@@ -195,28 +211,30 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            // Check if user is deleting their own profile
             if (auth()->user()->id != $id) {
                 return response()->json([
-                    'message' => 'Unauthorized to delete this account'
+                    'message' => 'Non autorisé à supprimer ce compte'
                 ], 403);
             }
 
-            // Delete all tokens before deleting user
+            if ($user->profile_pic && \Storage::disk('public')->exists($user->profile_pic)) {
+                \Storage::disk('public')->delete($user->profile_pic);
+            }
+
             $user->tokens()->delete();
             $user->delete();
 
             return response()->json([
-                'message' => 'Account deleted successfully'
+                'message' => 'Compte supprimé avec succès'
             ], 200);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
-                'message' => 'User not found'
+                'message' => 'Utilisateur non trouvé'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Delete failed'
+                'message' => 'La suppression a échoué'
             ], 500);
         }
     }

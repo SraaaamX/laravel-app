@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public routes
-Route::post('users/register', [UserController::class, 'register']);
-Route::post('users/login', [UserController::class, 'login']);
+Route::post('users/register', [UserController::class, 'register'])->name('api.register');
+Route::post('users/login', [UserController::class, 'login'])->name('api.login');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
