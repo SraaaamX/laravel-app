@@ -163,7 +163,7 @@ class UserController extends Controller
                 return back()
                     ->withErrors($validator)
                     ->withInput()
-                    ->with('error', 'Veuillez corriger les erreurs ci-dessous.');
+                    ->with('profile_error', 'Veuillez corriger les erreurs ci-dessous.'); // Changed to profile_error
             }
 
             $data = $validator->validated();
@@ -195,7 +195,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Erreur lors de la mise à jour du profil')
+                ->with('profile_error', 'Erreur lors de la mise à jour du profil') // Changed to profile_error
                 ->withInput();
         }
     }

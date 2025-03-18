@@ -6,11 +6,11 @@
             <div class="col-md-8">
                 <div class="card shadow-smooth border-0">
                     <div class="bg-primary text-white text-center py-5 position-relative">
-                        <div class="position-absolute w-100" style="bottom: -50px">
+                        <div class="position-absolute w-100" style="bottom: -75px">
                             @if (auth()->user()->profile_pic)
                                 <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile Picture"
                                     class="rounded-circle border border-4 border-white shadow-sm"
-                                    style="width: 100px; height: 100px; object-fit: cover;">
+                                    style="width: 150px; height: 150px; object-fit: cover;">
                             @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
                                     alt="Default Profile Picture"
@@ -21,6 +21,11 @@
                     </div>
 
                     <div class="card-body pt-5 mt-4">
+                        @if (session('profile_error'))
+                            <div class="alert alert-danger mb-4">
+                                {{ session('profile_error') }}
+                            </div>
+                        @endif
                         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
@@ -193,7 +198,12 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            @if ($errors->any() || session('error'))
+            // Show modal only for password-related errors, not profile errors
+            @if (
+                (session('error') && !session('profile_error')) ||
+                    $errors->has('current_password') ||
+                    $errors->has('new_password') ||
+                    $errors->has('new_password_confirmation'))
                 var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
                 modal.show();
             @endif
