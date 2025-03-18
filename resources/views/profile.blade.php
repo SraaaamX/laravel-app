@@ -82,7 +82,7 @@
                                                 <i class="bi bi-journal-text text-muted"></i>
                                             </span>
                                             <textarea class="form-control border-start-0 ps-0 @error('bio') is-invalid @enderror" id="bio" name="bio"
-                                                rows="3" placeholder="Parlez-nous un peu de vous...">{{ old('bio', auth()->user()->bio) }}</textarea>
+                                                rows="3" placeholder="Parlez-nous un peu de vous..." style="resize: none;">{{ old('bio', auth()->user()->bio) }}</textarea>
                                         </div>
                                         @error('bio')
                                             <div class="invalid-feedback">{{ $message }}</div>

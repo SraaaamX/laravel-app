@@ -170,11 +170,20 @@ class UserController extends Controller
             $data['name'] = $data['username']; // Set name to be the same as username
 
             if ($request->hasFile('profile_pic')) {
-                // Delete old profile picture if it exists
-                if ($user->profile_pic && \Storage::disk('public')->exists($user->profile_pic)) {
-                    \Storage::disk('public')->delete($user->profile_pic);
+                try {
+                    // Delete old profile picture if it exists
+                    if ($user->profile_pic) {
+                        $oldPath = $user->profile_pic;
+                        if (\Storage::disk('public')->exists($oldPath)) {
+                            \Storage::disk('public')->delete($oldPath);
+                        }
+                    }
+
+                    // Store new profile picture
+                    $data['profile_pic'] = $request->file('profile_pic')->store('profile_pics', 'public');
+                } catch (\Exception $e) {
+                    report($e); // Log the error
                 }
-                $data['profile_pic'] = $request->file('profile_pic')->store('profile_pics', 'public');
             }
 
             $user->update($data);

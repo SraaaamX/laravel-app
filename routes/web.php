@@ -34,3 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [UserController::class, 'deleteProfile'])->name('profile.delete');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 });
+
+// Redirection vers accueil si la route n'existe pas
+Route::fallback(function () {
+    return redirect()->route('home');
+});
+
