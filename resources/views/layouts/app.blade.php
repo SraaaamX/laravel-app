@@ -27,14 +27,6 @@
             --transition-speed: 0.2s;
         }
 
-        [data-bs-theme="dark"] {
-            --background-light: #1a1d20;
-            --background-white: #212529;
-            --text-color: #f8f9fa;
-            --text-muted: #adb5bd;
-            --border-color: #2d3238;
-        }
-
         html {
             height: 100%;
         }
@@ -178,36 +170,14 @@
     <!-- Footer -->
     <footer class="footer py-4 mt-5 border-top">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Réseau Social Laravel</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                    <button class="btn btn-outline-secondary rounded-pill" id="themeToggle">
-                        <i class="bi bi-moon-stars"></i>
-                        <span class="ms-1 d-none d-md-inline">Thème</span>
-                    </button>
-                </div>
+            <div class="text-center">
+                <p class="mb-0 text-muted">&copy; {{ date('Y') }} Réseau Social Laravel</p>
             </div>
         </div>
     </footer>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Theme Toggle Script -->
-    <script>
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
-                document.documentElement.setAttribute('data-bs-theme', 'light');
-                this.innerHTML =
-                    '<i class="bi bi-moon-stars"></i><span class="ms-1 d-none d-md-inline">Thème</span>';
-            } else {
-                document.documentElement.setAttribute('data-bs-theme', 'dark');
-                this.innerHTML = '<i class="bi bi-sun"></i><span class="ms-1 d-none d-md-inline">Thème</span>';
-            }
-        });
-    </script>
 
     @stack('scripts')
 </body>
