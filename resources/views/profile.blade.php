@@ -93,11 +93,39 @@
                                         <button type="submit" class="btn btn-primary rounded-pill py-2 hover-lift">
                                             <i class="bi bi-check2-circle me-2"></i>Mettre à jour le profil
                                         </button>
+                                        <button type="button" class="btn btn-danger rounded-pill py-2"
+                                            data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                                            <i class="bi bi-trash me-2"></i>Supprimer le compte
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmation de suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="{{ route('profile.delete') }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -206,6 +206,43 @@ class UserController extends Controller
             ->with('success', 'Vous avez été déconnecté avec succès');
     }
 
+    public function deleteProfile(Request $request)
+    {
+        try {
+            $user = auth()->user();
+
+            // Suppression de la photo de profil si elle existe
+            if ($user->profile_pic && \Storage::disk('public')->exists($user->profile_pic)) {
+                \Storage::disk('public')->delete($user->profile_pic);
+            }
+
+            // Suppression des tokens et du compte
+            $user->tokens()->delete();
+            $user->delete();
+
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Compte supprimé avec succès'], 200);
+            }
+
+            return redirect()
+                ->route('home')
+                ->with('success', 'Votre compte a été supprimé avec succès');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'La suppression a échoué'], 500);
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'La suppression du compte a échoué');
+        }
+    }
+
     public function destroy($id)
     {
         try {

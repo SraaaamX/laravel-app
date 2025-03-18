@@ -23,7 +23,7 @@
                                     <input type="text"
                                         class="form-control border-start-0 ps-0 @error('username') is-invalid @enderror"
                                         id="username" name="username" value="{{ old('username') }}"
-                                        placeholder="votre_pseudo" required>
+                                        placeholder="Entrez votre pseudo" required>
                                 </div>
                                 @error('username')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -39,7 +39,7 @@
                                     <input type="email"
                                         class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email') }}"
-                                        placeholder="vous@exemple.com" required>
+                                        placeholder="Entrez votre adresse email" required>
                                 </div>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -54,7 +54,7 @@
                                     </span>
                                     <input type="password"
                                         class="form-control border-start-0 ps-0 @error('password') is-invalid @enderror"
-                                        id="password" name="password" placeholder="••••••••" required>
+                                        id="password" name="password" placeholder="Entrez votre mot de passe" required>
                                 </div>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -69,8 +69,8 @@
                                         <i class="bi bi-shield-lock text-muted"></i>
                                     </span>
                                     <input type="password" class="form-control border-start-0 ps-0"
-                                        id="password_confirmation" name="password_confirmation" placeholder="••••••••"
-                                        required>
+                                        id="password_confirmation" name="password_confirmation"
+                                        placeholder="Confirmez votre mot de passe" required>
                                 </div>
                             </div>
 
