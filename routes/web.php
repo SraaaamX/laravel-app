@@ -15,11 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [PostController::class, 'randomPosts'])->name('home');
+Route::get('/profile/{slug}', [UserController::class, 'showPublicProfile'])->name('profile.public');
 
-// Routes publiques
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserController::class, 'showLogin'])->name('login');
     Route::post('/login', [UserController::class, 'login'])->name('login.submit');

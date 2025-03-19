@@ -120,6 +120,23 @@ class UserController extends Controller
             ->with('success', 'Connexion réussie !');
     }
 
+    public function showPublicProfile($slug)
+    {
+        $user = User::where('username', $slug)->first();
+
+        if (!$user) {
+            return redirect()->route('home');
+        }
+
+        // Si l'utilisateur connecté essaie d'accéder à son propre profil via l'URL publique
+        if (Auth::check() && Auth::id() === $user->id) {
+            return redirect()->route('profile');
+        }
+
+        $posts = $user->posts()->latest()->get();
+        return view('profile_public', compact('user', 'posts'));
+    }
+
     public function me(Request $request)
     {
         try {

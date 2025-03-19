@@ -16,7 +16,18 @@ class PostController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['randomPosts']);
+    }
+
+    /**
+     * Display a random selection of posts on the home page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function randomPosts()
+    {
+        $posts = Post::with('author')->inRandomOrder()->take(3)->get();
+        return view('home', compact('posts'));
     }
 
     /**

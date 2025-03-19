@@ -112,7 +112,7 @@
                     @else
                         <li class="nav-item me-3">
                             <a class="nav-link d-flex align-items-center" href="{{ route('profile') }}">
-                                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
+                                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                             </a>
                         </li>
                         <li class="nav-item">
