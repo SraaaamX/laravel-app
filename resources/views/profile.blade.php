@@ -127,9 +127,11 @@
                                     <div class="col-md-6 mb-4">
                                         <div class="card" style="max-width: 350px;">
                                             @if ($post->post_resource)
-                                                <img src="{{ asset('storage/' . $post->post_resource) }}"
-                                                    class="card-img-top" alt="Post media"
-                                                    style="max-height: 150px; object-fit: cover;">
+                                                <a href="{{ route('posts.show', $post->id) }}">
+                                                    <img src="{{ asset('storage/' . $post->post_resource) }}"
+                                                        class="card-img-top" alt="Post media"
+                                                        style="max-height: 150px; object-fit: cover;">
+                                                </a>
                                             @endif
                                             <div class="card-body">
                                                 <p class="card-text" style="font-size: 0.8rem;">{{ $post->description }}
@@ -189,91 +191,6 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Mot de passe actuel</label>
-                            <input type="password" class="form-control @error('current_password') is-invalid @enderror"
-                                id="current_password" name="current_password" required>
-                            @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label">Nouveau mot de passe</label>
-                            <input type="password" class="form-control @error('new_password') is-invalid @enderror"
-                                id="new_password" name="new_password" required>
-                            @error('new_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text">Le mot de passe doit contenir au moins 8 caractères</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="new_password_confirmation" class="form-label">Confirmer le nouveau mot de
-                                passe</label>
-                            <input type="password"
-                                class="form-control @error('new_password_confirmation') is-invalid @enderror"
-                                id="new_password_confirmation" name="new_password_confirmation" required>
-                            @error('new_password_confirmation')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        @if (session('error'))
-                            <div class="alert alert-danger">
-                                {{ session('error') }}
-                            </div>
-                        @endif
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-warning">Modifier le mot de passe</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de confirmation de suppression -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmation de suppression</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <form action="{{ route('profile.delete') }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show modal only for password-related errors, not profile errors
-            @if (
-                (session('error') && !session('profile_error')) ||
-                    $errors->has('current_password') ||
-                    $errors->has('new_password') ||
-                    $errors->has('new_password_confirmation'))
-                var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-                modal.show();
-            @endif
-
-            @if (session('password_updated'))
-                // Ferme le modal si le mot de passe a été mis à jour avec succès
-                var modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
-                if (modal) {
-                    modal.hide();
-                }
-            @endif
-        });
-    </script>
-@endpush
+                            <input type="password" class="form-control @error('current_password')
+        is-invalid
+    @enderror"

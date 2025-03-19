@@ -90,7 +90,7 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name', 'Réseau Social') }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

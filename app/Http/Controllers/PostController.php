@@ -26,7 +26,7 @@ class PostController extends Controller
      */
     public function randomPosts()
     {
-        $posts = Post::with('author')->inRandomOrder()->take(3)->get();
+        $posts = Post::with('author')->latest()->paginate(3);
         return view('home', compact('posts'));
     }
 
@@ -87,7 +87,8 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::with('author')->findOrFail($id);
-        return view('posts.show', compact('post'));
+        $comments = $post->comments()->with('user')->latest()->paginate(5);
+        return view('posts.show', compact('post', 'comments'));
     }
 
     /**

@@ -58,5 +58,10 @@
                 </div>
             @endforelse
         </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $posts->links() }}
+        </div>
     </div>
 @endsection
