@@ -50,7 +50,7 @@
                                         <img src="{{ asset('storage/' . $post->post_resource) }}" alt="Image du post">
                                     </div>
                                 @endif
-                                <p>{{ Str::limit($post->description, 100) }}</p>
+                                <p>{{ Str::limit($post->description, 20) }}</p>
                             </div>
 
                             <div class="post-actions">
