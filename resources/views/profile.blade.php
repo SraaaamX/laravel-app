@@ -1,192 +1,131 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <!-- Profile Card -->
-                <div class="card shadow-lg rounded-4 border-0 overflow-hidden">
-                    <!-- Profile Header -->
-                    <div class="position-relative">
-                        <div class="bg-gradient text-white text-center py-5">
-                            <div class="position-absolute w-100" style="bottom: -50px">
-                                @if (auth()->user()->profile_pic)
-                                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Photo de profil"
-                                        class="rounded-circle border-4 border-white shadow-lg profile-picture"
-                                        style="width: 150px; height: 150px; object-fit: cover;">
-                                @else
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
-                                        alt="Photo de profil par défaut"
-                                        class="rounded-circle border-4 border-white shadow-lg profile-picture"
-                                        style="width: 150px; height: 150px; object-fit: cover;">
-                                @endif
-                            </div>
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-picture-container">
+                @if (auth()->user()->profile_pic)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Photo de profil"
+                        class="profile-picture">
+                @else
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
+                        alt="Photo de profil par défaut" class="profile-picture">
+                @endif
+            </div>
+            <h1 class="profile-name">{{ auth()->user()->name }}</h1>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="content-columns">
+            <!-- Left Column -->
+            <div class="left-column">
+                <div class="info-section">
+                    <h3>Informations</h3>
+                    @if (session('profile_error'))
+                        <div class="error-message">
+                            {{ session('profile_error') }}
                         </div>
-                    </div>
+                    @endif
 
-                    <!-- Profile Form -->
-                    <div class="card-body pt-5 mt-4 pb-4">
-                        @if (session('profile_error'))
-                            <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert">
-                                {{ session('profile_error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data"
+                        class="profile-form">
+                        @csrf
+                        <!-- Photo de profil -->
+                        <div class="form-group">
+                            <label>Photo de profil</label>
+                            <input type="file" name="profile_pic" accept="image/*" class="form-input">
+                            @error('profile_pic')
+                                <div class="error-text">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row justify-content-center">
-                                <div class="col-md-8">
-                                    <!-- Photo de profil -->
-                                    <div class="form-group mb-4">
-                                        <label class="form-label fw-medium mb-2">Photo de profil</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <i class="bi bi-image"></i>
-                                            </span>
-                                            <input type="file"
-                                                class="form-control border-start-0 ps-0 @error('profile_pic') is-invalid @enderror"
-                                                name="profile_pic" accept="image/*">
-                                        </div>
-                                        @error('profile_pic')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                        <!-- Username -->
+                        <div class="form-group">
+                            <label>Nom d'utilisateur</label>
+                            <input type="text" name="username" value="{{ old('username', auth()->user()->username) }}"
+                                class="form-input" required>
+                            @error('username')
+                                <div class="error-text">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <!-- Username -->
-                                    <div class="form-group mb-4">
-                                        <label class="form-label fw-medium mb-2">Nom d'utilisateur</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <i class="bi bi-person"></i>
-                                            </span>
-                                            <input type="text"
-                                                class="form-control border-start-0 ps-0 @error('username') is-invalid @enderror"
-                                                name="username" value="{{ old('username', auth()->user()->username) }}"
-                                                required>
-                                        </div>
-                                        @error('username')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}"
+                                class="form-input" required>
+                            @error('email')
+                                <div class="error-text">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <!-- Email -->
-                                    <div class="form-group mb-4">
-                                        <label class="form-label fw-medium mb-2">Email</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <i class="bi bi-envelope"></i>
-                                            </span>
-                                            <input type="email"
-                                                class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror"
-                                                name="email" value="{{ old('email', auth()->user()->email) }}" required>
-                                        </div>
-                                        @error('email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                        <!-- Bio -->
+                        <div class="form-group">
+                            <label>Biographie</label>
+                            <textarea name="bio" rows="3" class="form-input">{{ old('bio', auth()->user()->bio) }}</textarea>
+                            @error('bio')
+                                <div class="error-text">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <!-- Bio -->
-                                    <div class="form-group mb-4">
-                                        <label class="form-label fw-medium mb-2">Biographie</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <i class="bi bi-journal-text"></i>
-                                            </span>
-                                            <textarea class="form-control border-start-0 ps-0 @error('bio') is-invalid @enderror" name="bio" rows="3"
-                                                style="resize: none;">{{ old('bio', auth()->user()->bio) }}</textarea>
-                                        </div>
-                                        @error('bio')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Mettre à jour le profil</button>
+                        </div>
+                    </form>
 
-                                    <!-- Action Buttons -->
-                                    <div class="d-grid gap-3">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-check2-circle me-2"></i>Mettre à jour le profil
-                                        </button>
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                            data-bs-target="#changePasswordModal">
-                                            <i class="bi bi-key me-2"></i>Modifier le mot de passe
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                            data-bs-target="#deleteConfirmModal">
-                                            <i class="bi bi-trash me-2"></i>Supprimer le compte
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="account-actions">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#changePasswordModal">Modifier le mot de passe</button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteConfirmModal">Supprimer le compte</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Publications -->
-                <div class="card shadow-lg rounded-4 border-0 mt-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="fw-bold mb-0" style="color: var(--primary-color)">
-                                <i class="bi bi-grid-3x3-gap me-2"></i>Mes Publications
-                            </h4>
-                            <a href="{{ route('posts.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i>Nouvelle publication
-                            </a>
-                        </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <div class="posts-section">
+                    <div class="posts-header">
+                        <h3>Mes Publications</h3>
+                        <a href="{{ route('posts.create') }}" class="btn btn-primary">Nouvelle publication</a>
+                    </div>
 
-                        @if (count(auth()->user()->posts) > 0)
-                            <div class="row g-4">
-                                @foreach (auth()->user()->posts as $post)
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border post-card">
-                                            @if ($post->post_resource)
-                                                <a href="{{ route('posts.show', $post->id) }}" class="post-image-link">
-                                                    <div class="ratio ratio-1x1">
-                                                        <img src="{{ asset('storage/' . $post->post_resource) }}"
-                                                            class="card-img-top object-fit-cover" alt="Post media">
-                                                    </div>
-                                                </a>
-                                            @endif
-                                            <div class="card-body">
-                                                <p class="card-text text-secondary">
-                                                    {{ Str::limit($post->description, 100) }}</p>
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('posts.edit', $post->id) }}"
-                                                            class="btn btn-sm btn-outline-primary">
-                                                            <i class="bi bi-pencil me-1"></i>Modifier
-                                                        </a>
-                                                        <form action="{{ route('posts.destroy', $post->id) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-outline-danger ms-2">
-                                                                <i class="bi bi-trash me-1"></i>Supprimer
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-heart me-1"></i>{{ $post->likesNumber }}
-                                                    </small>
-                                                </div>
+                    @if (count(auth()->user()->posts) > 0)
+                        <div class="posts-grid">
+                            @foreach (auth()->user()->posts as $post)
+                                <div class="post-card">
+                                    @if ($post->post_resource)
+                                        <div class="post-image">
+                                            <img src="{{ asset('storage/' . $post->post_resource) }}" alt="Post media">
+                                        </div>
+                                    @endif
+                                    <div class="post-content">
+                                        <p>{{ Str::limit($post->description, 100) }}</p>
+                                        <div class="post-actions">
+                                            <div class="action-buttons">
+                                                <a href="{{ route('posts.edit', $post->id) }}"
+                                                    class="action-link">Modifier</a>
+                                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
+                                                    class="delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="action-link danger">Supprimer</button>
+                                                </form>
                                             </div>
+                                            <span class="likes-count">{{ $post->likesNumber }} likes</span>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-5">
-                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
-                                <h5 class="mt-3 fw-bold" style="color: var(--primary-color)">Aucune publication</h5>
-                                <p class="text-secondary mb-4">Commencez à partager vos moments avec la communauté !</p>
-                                <a href="{{ route('posts.create') }}" class="btn btn-primary">
-                                    <i class="bi bi-plus-circle me-2"></i>Créer ma première publication
-                                </a>
-                            </div>
-                        @endif
-                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="empty-posts">
+                            <p>Aucune publication</p>
+                            <p>Commencez à partager vos moments avec la communauté !</p>
+                            <a href="{{ route('posts.create') }}" class="btn btn-primary">Créer ma première publication</a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -195,62 +134,37 @@
     <!-- Change Password Modal -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold">Modifier le mot de passe</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Modifier le mot de passe</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="{{ route('profile.updatePassword') }}" method="POST">
                     @csrf
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">Mot de passe actuel</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-lock"></i>
-                                </span>
-                                <input type="password"
-                                    class="form-control border-start-0 ps-0 @error('current_password') is-invalid @enderror"
-                                    name="current_password" required>
-                            </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Mot de passe actuel</label>
+                            <input type="password" name="current_password" class="form-input" required>
                             @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-text">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">Nouveau mot de passe</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-key"></i>
-                                </span>
-                                <input type="password"
-                                    class="form-control border-start-0 ps-0 @error('new_password') is-invalid @enderror"
-                                    name="new_password" required>
-                            </div>
+                        <div class="form-group">
+                            <label>Nouveau mot de passe</label>
+                            <input type="password" name="new_password" class="form-input" required>
                             @error('new_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-text">{{ $message }}</div>
                             @enderror
-                            <div class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Le mot de passe doit contenir au moins 8 caractères
-                            </div>
+                            <small class="help-text">Le mot de passe doit contenir au moins 8 caractères</small>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">Confirmer le nouveau mot de passe</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-key-fill"></i>
-                                </span>
-                                <input type="password" class="form-control border-start-0 ps-0"
-                                    name="new_password_confirmation" required>
-                            </div>
+                        <div class="form-group">
+                            <label>Confirmer le nouveau mot de passe</label>
+                            <input type="password" name="new_password_confirmation" class="form-input" required>
                         </div>
                     </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-check2 me-2"></i>Modifier le mot de passe
-                        </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Modifier le mot de passe</button>
                     </div>
                 </form>
             </div>
@@ -260,26 +174,21 @@
     <!-- Delete Account Modal -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content rounded-4 shadow">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold">
-                        <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-                        Confirmation de suppression
-                    </h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Confirmation de suppression</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <p class="text-secondary mb-0">Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est
-                        irréversible et supprimera toutes vos données.</p>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera toutes
+                        vos données.</p>
                 </div>
-                <div class="modal-footer border-top">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <form action="{{ route('profile.delete') }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash me-2"></i>Confirmer la suppression
-                        </button>
+                        <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
                     </form>
                 </div>
             </div>
@@ -287,108 +196,312 @@
     </div>
 
     <style>
-        .bg-gradient {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        .profile-container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .profile-header {
+            background: var(--facebook-light-blue);
+            border: 1px solid var(--facebook-border);
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-picture-container {
+            margin-bottom: 8px;
         }
 
         .profile-picture {
-            transition: transform var(--transition-speed);
+            width: 160px;
+            height: 160px;
+            border: 1px solid var(--facebook-border);
+            padding: 3px;
+            background: white;
         }
 
-        .profile-picture:hover {
-            transform: scale(1.05);
+        .profile-name {
+            color: var(--facebook-link);
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0;
         }
 
-        .form-control {
-            border: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: all var(--transition-speed);
+        .content-columns {
+            display: flex;
+            gap: 20px;
         }
 
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.1);
+        .left-column {
+            width: 320px;
+            flex-shrink: 0;
         }
 
-        .input-group-text {
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-speed);
+        .right-column {
+            flex: 1;
+            max-width: 500px;
         }
 
-        .btn {
-            display: inline-flex;
+        .info-section {
+            background: white;
+            border: 1px solid var(--facebook-border);
+            margin-bottom: 20px;
+        }
+
+        .info-section h3 {
+            background: var(--facebook-light-blue);
+            border-bottom: 1px solid var(--facebook-border);
+            margin: 0;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--facebook-text);
+        }
+
+        .profile-form {
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--facebook-text);
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 3px;
+            border: 1px solid #bdc7d8;
+            font-size: 11px;
+        }
+
+        .form-input:focus {
+            border-color: #3b5998;
+        }
+
+        .error-message {
+            background: #ffebe8;
+            border: 1px solid #dd3c10;
+            padding: 8px;
+            margin: 8px;
+            color: var(--danger);
+            font-size: 11px;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .form-actions {
+            padding: 8px;
+            border-top: 1px solid var(--facebook-border);
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .account-actions {
+            padding: 8px;
+            border-top: 1px solid var(--facebook-border);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .posts-section {
+            background: white;
+            border: 1px solid var(--facebook-border);
+        }
+
+        .posts-header {
+            background: var(--facebook-light-blue);
+            border-bottom: 1px solid var(--facebook-border);
+            padding: 6px 8px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            transition: all var(--transition-speed);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
+        .posts-header h3 {
+            margin: 0;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--facebook-text);
+        }
+
+        .posts-grid {
+            padding: 8px;
         }
 
         .post-card {
-            transition: all var(--transition-speed);
+            border: 1px solid var(--facebook-border);
+            margin-bottom: 8px;
         }
 
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .post-image-link {
+        .post-image {
+            border-bottom: 1px solid var(--facebook-border);
+            max-height: 250px;
             overflow: hidden;
+        }
+
+        .post-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
-        .post-image-link img {
-            transition: transform var(--transition-speed);
+        .post-content {
+            padding: 8px;
         }
 
-        .post-image-link:hover img {
-            transform: scale(1.05);
+        .post-content p {
+            margin: 0 0 8px 0;
+            font-size: 11px;
+            color: var(--facebook-text);
         }
 
-        .modal-content {
+        .post-actions {
+            border-top: 1px solid var(--facebook-border);
+            padding-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-link {
+            color: var(--facebook-link);
+            text-decoration: none;
+            font-size: 11px;
+            background: none;
             border: none;
+            padding: 0;
+            cursor: pointer;
         }
 
-        .modal-header,
-        .modal-footer {
-            padding: 1.25rem 1.5rem;
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-link.danger {
+            color: var(--danger);
+        }
+
+        .likes-count {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .empty-posts {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .empty-posts p {
+            margin: 3px 0;
+        }
+
+        .delete-form {
+            display: inline;
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 3px;
+            border: 1px solid var(--facebook-border);
+        }
+
+        .modal-header {
+            background: var(--facebook-light-blue);
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--facebook-border);
+        }
+
+        .modal-header h5 {
+            color: var(--facebook-text);
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0;
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 8px;
+            font-size: 11px;
+            color: var(--facebook-text);
         }
 
-        .btn-group .btn {
-            border-radius: 0.5rem !important;
+        .modal-footer {
+            background: var(--facebook-light-blue);
+            padding: 6px 8px;
+            border-top: 1px solid var(--facebook-border);
+        }
+
+        .btn {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 0;
+        }
+
+        .btn-primary {
+            background: #5b74a8;
+            background-image: linear-gradient(#637bad, #5872a7);
+            border: 1px solid;
+            border-color: #29447e #29447e #1a356e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            border: 1px solid #999;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #ee3d2e;
+            border: 1px solid #c43c35;
+            color: white;
+            font-weight: bold;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .content-columns {
+                flex-direction: column;
+            }
+
+            .left-column {
+                width: 100%;
+            }
+
+            .right-column {
+                max-width: 100%;
+            }
         }
     </style>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (
-                (session('error') && !session('profile_error')) ||
-                    $errors->has('current_password') ||
-                    $errors->has('new_password') ||
-                    $errors->has('new_password_confirmation'))
-                var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-                modal.show();
-            @endif
-
-            @if (session('password_updated'))
-                var modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
-                if (modal) {
-                    modal.hide();
-                }
-            @endif
-        });
-    </script>
-@endpush

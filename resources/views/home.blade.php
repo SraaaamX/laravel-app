@@ -1,146 +1,338 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="page-container">
         <!-- Call-to-action for non-authenticated users -->
         @guest
-            <div class="welcome-banner p-4 mb-5 rounded-4 bg-white shadow-sm border" role="alert">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <h2 class="fw-bold mb-2" style="color: var(--primary-color)">Bienvenue sur notre réseau social !</h2>
-                        <p class="lead mb-0 text-secondary">Rejoignez notre communauté pour partager vos moments et interagir
-                            avec d'autres membres.</p>
-                    </div>
-                    <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg me-2 mb-2 mb-lg-0">
-                            <i class="bi bi-person-plus me-2"></i>S'inscrire
-                        </a>
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
-                        </a>
-                    </div>
+            <div class="welcome-banner">
+                <h2>Bienvenue sur notre réseau social !</h2>
+                <p>Rejoignez notre communauté pour partager vos moments et interagir avec d'autres membres.</p>
+                <div class="welcome-actions">
+                    <a href="{{ route('register') }}" class="btn btn-primary">S'inscrire</a>
+                    <a href="{{ route('login') }}" class="btn btn-primary">Se connecter</a>
                 </div>
             </div>
         @endguest
 
-        <!-- Posts Grid -->
-        <div class="row g-4">
-            @forelse ($posts as $post)
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <!-- Author Section -->
-                            <div class="d-flex align-items-center mb-3">
-                                <a href="{{ Auth::check() && Auth::id() === $post->author_id ? route('profile') : route('profile.public', $post->author->username) }}"
-                                    class="author-link">
-                                    <img src="{{ $post->author->profile_pic ? asset('storage/' . $post->author->profile_pic) : 'https://ui-avatars.com/api/?name=' . urlencode($post->author->name) }}"
-                                        class="rounded-circle border shadow-sm" alt="Photo de profil"
-                                        style="width: 48px; height: 48px; object-fit: cover;">
-                                </a>
-                                <div class="ms-3">
-                                    <h6 class="fw-bold mb-0" style="color: var(--primary-color)">{{ $post->author->name }}
-                                    </h6>
-                                    <small class="text-muted">
-                                        <i class="bi bi-clock me-1"></i>
-                                        {{ $post->created_at->format('d/m/Y \\à H:i') }}
-                                    </small>
+        <!-- Left Column -->
+        <div class="content-columns">
+            <div class="left-column">
+                @auth
+                    <div class="create-post-box">
+                        <a href="{{ route('posts.create') }}" class="create-post-link">
+                            Quoi de neuf ?
+                        </a>
+                    </div>
+                @endauth
+
+                <!-- Posts List -->
+                <div class="posts-feed">
+                    @forelse ($posts as $post)
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-author">
+                                    <a
+                                        href="{{ Auth::check() && Auth::id() === $post->author_id ? route('profile') : route('profile.public', $post->author->username) }}">
+                                        <img src="{{ $post->author->profile_pic ? asset('storage/' . $post->author->profile_pic) : 'https://ui-avatars.com/api/?name=' . urlencode($post->author->name) }}"
+                                            alt="Photo de profil">
+                                    </a>
+                                    <div class="post-info">
+                                        <a href="{{ Auth::check() && Auth::id() === $post->author_id ? route('profile') : route('profile.public', $post->author->username) }}"
+                                            class="author-name">{{ $post->author->name }}</a>
+                                        <span class="post-time">{{ $post->created_at->format('d/m/Y \\à H:i') }}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Post Content -->
                             <div class="post-content">
                                 @if ($post->post_resource)
-                                    <div class="post-image mb-3 rounded-4 overflow-hidden shadow-sm">
-                                        <div class="ratio ratio-1x1">
-                                            <img src="{{ asset('storage/' . $post->post_resource) }}"
-                                                class="img-fluid object-fit-cover w-100 h-100" alt="Image du post">
-                                        </div>
+                                    <div class="post-image">
+                                        <img src="{{ asset('storage/' . $post->post_resource) }}" alt="Image du post">
                                     </div>
                                 @endif
-                                <p class="card-text">{{ Str::limit($post->description, 100) }}</p>
+                                <p>{{ Str::limit($post->description, 100) }}</p>
                             </div>
 
-                            <!-- View Post Link -->
-                            <div class="mt-3 text-end">
-                                <a href="{{ route('posts.show', $post->id) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye me-1"></i>Voir plus
-                                </a>
+                            <div class="post-actions">
+                                <a href="{{ route('posts.show', $post->id) }}" class="post-action-link">Voir plus</a>
                             </div>
                         </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <div class="text-center py-5 my-5">
-                        <i class="bi bi-camera text-muted" style="font-size: 3rem;"></i>
-                        <h3 class="mt-3 fw-bold" style="color: var(--primary-color)">Aucun post à afficher</h3>
-                        <p class="text-secondary mb-4">Soyez le premier à partager quelque chose !</p>
-                        @auth
-                            <a href="{{ route('posts.create') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i>Créer un post
-                            </a>
-                        @endauth
-                    </div>
-                </div>
-            @endforelse
-        </div>
+                    @empty
+                        <div class="empty-state">
+                            <div class="empty-state-content">
+                                <p>Aucun post à afficher</p>
+                                <p>Soyez le premier à partager quelque chose !</p>
+                                @auth
+                                    <a href="{{ route('posts.create') }}" class="btn btn-primary">Créer un post</a>
+                                @endauth
+                            </div>
+                        </div>
+                    @endforelse
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-5">
-            {{ $posts->links() }}
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        {{ $posts->links() }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <div class="right-box">
+                    <div class="box-header">
+                        <h3>À propos</h3>
+                    </div>
+                    <div class="box-content">
+                        <p>Bienvenue sur notre réseau social inspiré de l'ancien Facebook !</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <style>
-        .author-link {
-            transition: transform var(--transition-speed);
-            display: inline-block;
+        .page-container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
-        .author-link:hover {
-            transform: scale(1.1);
+        .content-columns {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .card {
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-speed);
+        .left-column {
+            flex: 1;
+            max-width: 550px;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
+        .right-column {
+            width: 240px;
+            flex-shrink: 0;
+        }
+
+        .right-box {
+            background: var(--white);
+            border: 1px solid var(--facebook-border);
+            margin-bottom: 20px;
+        }
+
+        .box-header {
+            background: var(--facebook-light-blue);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--facebook-border);
+        }
+
+        .box-header h3 {
+            margin: 0;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--facebook-text);
+        }
+
+        .box-content {
+            padding: 10px;
+            font-size: 11px;
+            color: var(--facebook-text);
+        }
+
+        .welcome-banner {
+            background: var(--facebook-light-blue);
+            border: 1px solid var(--facebook-border);
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-banner h2 {
+            color: var(--facebook-text);
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .welcome-banner p {
+            color: var(--facebook-text);
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-actions {
+            margin-top: 8px;
+        }
+
+        .create-post-box {
+            background: var(--white);
+            border: 1px solid var(--facebook-border);
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        .create-post-link {
+            color: #666;
+            text-decoration: none;
+            display: block;
+            font-size: 11px;
+            padding: 3px;
+        }
+
+        .post-card {
+            background: var(--white);
+            border: 1px solid var(--facebook-border);
+            margin-bottom: 10px;
+        }
+
+        .post-header {
+            padding: 8px;
+            border-bottom: 1px solid var(--facebook-border);
+            background: var(--facebook-light-blue);
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .post-author img {
+            width: 32px;
+            height: 32px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        .post-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            color: var(--facebook-link);
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .post-time {
+            color: #666;
+            font-size: 10px;
+        }
+
+        .post-content {
+            padding: 8px;
+        }
+
+        .post-content p {
+            margin: 0;
+            font-size: 11px;
+            color: var(--facebook-text);
+        }
+
+        .post-image {
+            margin: -8px -8px 8px -8px;
+            max-height: 350px;
+            overflow: hidden;
         }
 
         .post-image img {
-            transition: transform var(--transition-speed);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
-        .post-image:hover img {
-            transform: scale(1.05);
+        .post-actions {
+            padding: 4px 8px;
+            border-top: 1px solid var(--facebook-border);
+            background: var(--facebook-light-blue);
         }
 
-        /* Custom Pagination Styling */
+        .post-action-link {
+            color: var(--facebook-link);
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .post-action-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .empty-state-content {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .empty-state-content p {
+            margin: 3px 0;
+        }
+
+        .pagination-container {
+            padding: 8px;
+            text-align: center;
+            border-top: 1px solid var(--facebook-border);
+        }
+
+        /* Classic Facebook Pagination */
         .pagination {
-            gap: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin: 0;
         }
 
-        .page-item .page-link {
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-            color: var(--primary-color);
-            padding: 0.75rem 1rem;
-            transition: all var(--transition-speed);
+        .page-link {
+            padding: 3px 6px;
+            color: var(--facebook-link);
+            background: var(--white);
+            border: 1px solid var(--facebook-border);
+            font-size: 11px;
+            text-decoration: none;
         }
 
         .page-item.active .page-link {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background: var(--facebook-light-blue);
+            border-color: var(--facebook-border);
+            color: var(--facebook-text);
         }
 
-        .page-item .page-link:hover {
-            background-color: var(--background-light);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
+        .page-link:hover {
+            background: var(--facebook-light-blue);
+            text-decoration: none;
+        }
+
+        .btn {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 0;
+        }
+
+        .btn-primary {
+            background: #5b74a8;
+            background-image: linear-gradient(#637bad, #5872a7);
+            border: 1px solid;
+            border-color: #29447e #29447e #1a356e;
+            color: white;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .content-columns {
+                flex-direction: column;
+            }
+
+            .right-column {
+                width: 100%;
+            }
+
+            .left-column {
+                max-width: 100%;
+            }
         }
     </style>
 @endsection

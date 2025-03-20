@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'Réseau Social Laravel') }}</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -16,194 +13,194 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
-        :root {
-            --primary-color: #1a56db;
-            --primary-hover: #1e429f;
-            --secondary-color: #64748b;
-            --success-color: #059669;
-            --danger-color: #dc2626;
-            --background-light: #f1f5f9;
-            --background-white: #ffffff;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --transition-speed: 0.2s;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        @font-face {
+            font-family: 'Lucida Grande';
+            src: local('Lucida Grande');
         }
 
-        html {
-            height: 100%;
+        :root {
+            --facebook-blue: #3b5998;
+            --facebook-hover: #2f477a;
+            --facebook-light-blue: #d8dfea;
+            --facebook-grey: #f2f2f2;
+            --facebook-border: #c4cde0;
+            --facebook-text: #141823;
+            --facebook-link: #3b5998;
+            --white: #ffffff;
+            --danger: #ce0814;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color);
-            background-color: var(--background-light);
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all var(--transition-speed);
-            line-height: 1.6;
-            letter-spacing: -0.025em;
-        }
-
-        main {
-            flex: 1 0 auto;
-        }
-
-        footer {
-            flex-shrink: 0;
-            background-color: var(--background-white) !important;
-            border-color: var(--border-color) !important;
-            padding: 2rem 0;
+            font-family: 'Lucida Grande', 'Tahoma', 'Verdana', sans-serif;
+            font-size: 11px;
+            color: var(--facebook-text);
+            background-color: var(--facebook-grey);
+            line-height: 1.28;
+            margin: 0;
         }
 
         .navbar {
-            background-color: var(--background-white) !important;
-            border-bottom: 1px solid var(--border-color);
-            transition: all var(--transition-speed);
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-            box-shadow: var(--shadow-sm);
+            background-color: var(--facebook-blue);
+            background-image: linear-gradient(#4e69a2, #3b5998 50%);
+            border-bottom: 1px solid #133783;
+            box-shadow: 0 2px 2px -2px rgba(0, 0, 0, .52);
+            padding: 0;
+            height: 42px;
+            min-width: 980px;
+        }
+
+        .container {
+            width: 980px;
+            padding: 0 10px;
+            margin: 0 auto;
         }
 
         .navbar-brand {
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 1.25rem;
+            color: var(--white) !important;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 8px 0;
+            text-shadow: 0 1px 1px #333;
+        }
+
+        .navbar-nav {
+            height: 42px;
+            display: flex;
+            align-items: center;
         }
 
         .nav-link {
-            font-weight: 500;
-            color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: all var(--transition-speed);
+            color: var(--white) !important;
+            font-size: 12px;
+            padding: 4px 10px !important;
+            font-weight: bold;
+            text-shadow: 0 -1px rgba(0, 0, 0, .5);
         }
 
         .nav-link:hover {
-            color: var(--primary-color);
-            background-color: var(--background-light);
+            background-color: var(--facebook-hover);
+            text-decoration: none;
         }
 
         .btn {
-            font-weight: 500;
-            padding: 0.625rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: bold;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background: #5b74a8;
+            background-image: linear-gradient(#637bad, #5872a7);
+            border: 1px solid #29487d;
+            color: var(--white);
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
+            background: #4f6aa3;
         }
 
-        .btn-outline-danger {
-            color: var(--danger-color);
-            border-color: var(--danger-color);
-        }
-
-        .btn-outline-danger:hover {
-            background-color: var(--danger-color);
-            border-color: var(--danger-color);
-            color: white;
+        .btn-danger {
+            background: #ce0814;
+            border-color: #a50610;
+            color: var(--white);
         }
 
         .card {
-            border-radius: 1rem;
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-speed);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
+            border-radius: 3px;
+            border: 1px solid var(--facebook-border);
+            background: var(--white);
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .card-header {
+            background: var(--facebook-light-blue);
+            padding: 6px 8px;
+            font-weight: bold;
+            font-size: 11px;
+            color: var(--facebook-text);
+            border-bottom: 1px solid var(--facebook-border);
         }
 
         .alert {
-            border: none;
-            border-radius: 0.75rem;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-sm);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
         }
 
         .alert-success {
-            background-color: #ecfdf5;
-            color: var(--success-color);
+            background-color: #e9ffd9;
+            border-color: #98c687;
+            color: #1e4620;
         }
 
         .alert-danger {
-            background-color: #fef2f2;
-            color: var(--danger-color);
+            background-color: #ffebe8;
+            border-color: #dd3c10;
+            color: #ce0814;
         }
 
         .modal-content {
-            border-radius: 1rem;
-            border: none;
-            box-shadow: var(--shadow-lg);
+            border-radius: 3px;
+            border: 1px solid var(--facebook-border);
         }
 
         .modal-header {
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.5rem;
+            background: #f2f2f2;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--facebook-border);
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 15px;
+            color: var(--facebook-text);
         }
 
         .modal-footer {
-            border-top: 1px solid var(--border-color);
-            padding: 1.5rem;
+            background: #f2f2f2;
+            padding: 10px 15px;
+            border-top: 1px solid var(--facebook-border);
         }
 
         .form-control {
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: all var(--transition-speed);
+            border-radius: 0;
+            border: 1px solid #bdc7d8;
+            padding: 3px;
+            font-size: 11px;
         }
 
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.1);
+        main {
+            width: 980px;
+            margin: 20px auto;
+            background: var(--white);
+            padding: 15px;
+            border: 1px solid var(--facebook-border);
+            border-radius: 3px;
+            min-height: 600px;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        footer {
+            width: 980px;
+            margin: 0 auto;
+            color: #737373;
+            font-size: 11px;
+            padding: 15px 0;
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        footer a {
+            color: #3b5998;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
         .fade-in {
-            animation: fadeIn 0.3s ease-out;
+            animation: none;
         }
     </style>
 </head>
@@ -213,32 +210,29 @@
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name', 'Réseau Social') }}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @guest
                         <li class="nav-item me-2">
-                            <a class="nav-link d-flex align-items-center" href="{{ route('login') }}">
-                                <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+                            <a class="nav-link" href="{{ route('login') }}">
+                                Se connecter
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-primary" href="{{ route('register') }}">
-                                <i class="bi bi-person-plus"></i> Créer un compte
+                                S'inscrire
                             </a>
                         </li>
                     @else
                         <li class="nav-item me-3">
-                            <a class="nav-link d-flex align-items-center" href="{{ route('profile') }}">
-                                <i class="bi bi-person-circle me-2"></i> {{ Auth::user()->username }}
+                            <a class="nav-link" href="{{ route('profile') }}">
+                                {{ Auth::user()->username }}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#logoutConfirmModal">
-                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                                Déconnexion
                             </button>
                         </li>
                     @endguest
@@ -248,12 +242,11 @@
     </nav>
 
     <!-- Modal de confirmation de déconnexion -->
-    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="logoutConfirmModalLabel">Confirmation de déconnexion</h5>
+                    <h5 class="modal-title">Confirmation de déconnexion</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -263,7 +256,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-danger">Confirmer la déconnexion</button>
+                        <button type="submit" class="btn btn-danger">Déconnexion</button>
                     </form>
                 </div>
             </div>
@@ -271,7 +264,7 @@
     </div>
 
     <!-- Content -->
-    <main class="container py-5 fade-in">
+    <main>
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -290,11 +283,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-5 border-top bg-white">
-        <div class="container">
-            <div class="text-center">
-                <p class="mb-0 text-muted">&copy; {{ date('Y') }} Réseau Social Laravel</p>
-            </div>
+    <footer>
+        <div class="container text-center">
+            <a href="#">Français (France)</a> ·
+            <a href="#">English (US)</a> ·
+            <a href="#">Español</a> ·
+            <a href="#">Deutsch</a>
+            <hr style="margin: 10px 0; border-color: #dddfe2;">
+            <span>&copy; {{ date('Y') }} {{ config('app.name', 'Réseau Social Laravel') }}</span>
         </div>
     </footer>
 
