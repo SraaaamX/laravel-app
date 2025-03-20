@@ -225,7 +225,9 @@
                         </li>
                     @else
                         <li class="nav-item me-3">
-                            <a class="nav-link" href="{{ route('profile') }}">
+                            <a class="nav-link d-flex align-items-center" href="{{ route('profile') }}">
+                                <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
+                                    alt="Photo de profil" width="20" height="20" class="rounded-circle me-2">
                                 {{ Auth::user()->username }}
                             </a>
                         </li>
@@ -285,11 +287,6 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <a href="#">Français (France)</a> ·
-            <a href="#">English (US)</a> ·
-            <a href="#">Español</a> ·
-            <a href="#">Deutsch</a>
-            <hr style="margin: 10px 0; border-color: #dddfe2;">
             <span>&copy; {{ date('Y') }} {{ config('app.name', 'Réseau Social Laravel') }}</span>
         </div>
     </footer>
