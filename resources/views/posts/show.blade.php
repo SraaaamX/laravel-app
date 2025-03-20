@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Add Font Awesome for the thumbs up icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <div class="post-container">
         <!-- Post Card -->
         <div class="post-box">
@@ -49,6 +51,19 @@
                     </div>
                 @endif
                 <p class="post-description">{{ $post->description }}</p>
+            </div>
+
+            <!-- Like Section -->
+            <div class="post-actions-bar">
+                <form action="{{ route('posts.like', $post->id) }}" method="POST" class="like-form"
+                    data-post-id="{{ $post->id }}">
+                    @csrf
+                    <button type="submit" class="like-button {{ $post->isLikedBy(Auth::user()) ? 'liked' : '' }}">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="like-text">J'aime</span>
+                        <span class="likes-count">{{ $post->likes()->count() }}</span>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -388,5 +403,151 @@
             font-size: 11px;
             margin-top: 2px;
         }
+
+        /* Like button styling */
+        .post-actions-bar {
+            padding: 8px 10px;
+            border-top: 1px solid var(--facebook-border);
+            background: var(--facebook-light-blue);
+        }
+
+        .like-form {
+            display: inline-block;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 11px;
+            color: var(--facebook-link);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .like-button:hover {
+            text-decoration: underline;
+        }
+
+        .like-button .fa-thumbs-up {
+            font-size: 12px;
+            transform-origin: center;
+            transition: transform 0.2s ease;
+        }
+
+        .like-button:hover .fa-thumbs-up {
+            transform: scale(1.1);
+        }
+
+        .like-button.liked {
+            color: var(--facebook-text);
+            font-weight: bold;
+        }
+
+        .like-button.liked .fa-thumbs-up {
+            animation: likePop 0.3s ease;
+        }
+
+        .likes-count {
+            font-size: 11px;
+            font-weight: normal;
+            color: var(--facebook-text);
+            margin-left: 2px;
+        }
+
+        .like-button.liked .likes-count {
+            color: var(--facebook-text);
+        }
+
+        @keyframes likePop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeForms = document.querySelectorAll('.like-form');
+
+            likeForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const postId = this.dataset.postId;
+                    const likeButton = this.querySelector('.like-button');
+                    const likesCount = this.querySelector('.likes-count');
+
+                    // Update UI immediately
+                    const thumbsUp = likeButton.querySelector('.fa-thumbs-up');
+                    const currentLikeCount = parseInt(likesCount.textContent);
+                    const isCurrentlyLiked = likeButton.classList.contains('liked');
+
+                    // Toggle liked state
+                    if (!isCurrentlyLiked) {
+                        likeButton.classList.add('liked');
+                        likesCount.textContent = currentLikeCount + 1;
+                        // Reset and trigger animation
+                        thumbsUp.style.animation = 'none';
+                        thumbsUp.offsetHeight;
+                        thumbsUp.style.animation = null;
+                        thumbsUp.style.animationName = 'likePop';
+                    } else {
+                        likeButton.classList.remove('liked');
+                        likesCount.textContent = currentLikeCount - 1;
+                    }
+
+                    // Add press effect
+                    likeButton.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        likeButton.style.transform = 'scale(1)';
+                    }, 100);
+
+                    fetch(this.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-Token': document.querySelector('input[name="_token"]')
+                                    .value,
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                likesCount.textContent = data.likes_count;
+                                const thumbsUp = likeButton.querySelector('.fa-thumbs-up');
+
+                                if (data.is_liked) {
+                                    likeButton.classList.add('liked');
+                                    // Reset animation
+                                    thumbsUp.style.animation = 'none';
+                                    thumbsUp.offsetHeight; // Force reflow
+                                    thumbsUp.style.animation = null;
+                                    // Add pop animation
+                                    thumbsUp.style.animationName = 'likePop';
+                                } else {
+                                    likeButton.classList.remove('liked');
+                                }
+
+                                // Add hover effect to button
+                                likeButton.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    likeButton.style.transform = 'scale(1)';
+                                }, 100);
+                            }
+                        });
+                });
+            });
+        });
+    </script>
 @endsection

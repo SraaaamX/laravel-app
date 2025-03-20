@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::post('posts/{post}/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
     Route::put('comments/{comment}', [App\Http\Controllers\CommentController::class, 'update'])->name('comments.update');
     Route::delete('comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Like route
+    Route::post('posts/{post}/like', [PostController::class, 'toggleLike'])->name('posts.like');
 });
 
 // Redirection vers accueil si la route n'existe pas

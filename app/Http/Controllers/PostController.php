@@ -168,4 +168,34 @@ class PostController extends Controller
 
         return redirect()->route('profile')->with('success', 'Post deleted successfully.');
     }
+
+    /**
+     * Like or unlike a post
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleLike($id)
+    {
+        $post = Post::findOrFail($id);
+        $user = Auth::user();
+
+        if ($post->isLikedBy($user)) {
+            $post->likes()->where('user_id', $user->id)->delete();
+            $message = 'Post unliked successfully.';
+        } else {
+            $post->likes()->create(['user_id' => $user->id]);
+            $message = 'Post liked successfully.';
+        }
+
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'likes_count' => $post->likes()->count(),
+                'is_liked' => $post->isLikedBy($user)
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
 }
