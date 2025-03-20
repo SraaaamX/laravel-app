@@ -133,7 +133,7 @@ class UserController extends Controller
             return redirect()->route('profile');
         }
 
-        $posts = $user->posts()->latest()->get();
+        $posts = $user->posts()->latest()->paginate(3);
         return view('profile_public', compact('user', 'posts'));
     }
 
@@ -160,7 +160,8 @@ class UserController extends Controller
 
     public function showProfile()
     {
-        return view('profile');
+        $posts = auth()->user()->posts()->latest()->paginate(3);
+        return view('profile', compact('posts'));
     }
 
     public function updateProfile(Request $request)

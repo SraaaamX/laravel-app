@@ -91,9 +91,9 @@
                         <a href="{{ route('posts.create') }}" class="btn btn-primary">Nouvelle publication</a>
                     </div>
 
-                    @if (count(auth()->user()->posts) > 0)
+                    @if (count($posts) > 0)
                         <div class="posts-grid">
-                            @foreach (auth()->user()->posts as $post)
+                            @foreach ($posts as $post)
                                 <div class="post-card">
                                     @if ($post->post_resource)
                                         <div class="post-image">
@@ -119,6 +119,45 @@
                                 </div>
                             @endforeach
                         </div>
+                        <div class="pagination-container">
+                            {{ $posts->links() }}
+                        </div>
+
+                        <style>
+                            /* Pagination */
+                            .pagination-container {
+                                padding: 8px;
+                                text-align: center;
+                                border-top: 1px solid var(--facebook-border);
+                            }
+
+                            .pagination {
+                                display: flex;
+                                justify-content: center;
+                                gap: 3px;
+                                margin: 0;
+                            }
+
+                            .page-link {
+                                padding: 3px 6px;
+                                color: var(--facebook-link);
+                                background: var(--white);
+                                border: 1px solid var(--facebook-border);
+                                font-size: 11px;
+                                text-decoration: none;
+                            }
+
+                            .page-item.active .page-link {
+                                background: var(--facebook-light-blue);
+                                border-color: var(--facebook-border);
+                                color: var(--facebook-text);
+                            }
+
+                            .page-link:hover {
+                                background: var(--facebook-light-blue);
+                                text-decoration: none;
+                            }
+                        </style>
                     @else
                         <div class="empty-posts">
                             <p>Aucune publication</p>

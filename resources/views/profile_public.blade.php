@@ -55,6 +55,11 @@
                     </div>
                 @endif
             </div>
+            @if (count($posts) > 0)
+                <div class="pagination-container">
+                    {{ $posts->links() }}
+                </div>
+            @endif
         </div>
     </div>
 
