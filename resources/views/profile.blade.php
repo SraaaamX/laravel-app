@@ -113,7 +113,11 @@
                                                     <button type="submit" class="action-link danger">Supprimer</button>
                                                 </form>
                                             </div>
-                                            <span class="likes-count">{{ $post->likesNumber }} likes</span>
+                                            <div class="action-info">
+                                                <a href="{{ route('posts.show', $post->id) }}" class="action-link">Voir
+                                                    plus</a>
+                                                <span class="likes-count">{{ $post->likes()->count() }} J'aime</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -423,6 +427,11 @@
         }
 
         .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-info {
             display: flex;
             gap: 8px;
         }
