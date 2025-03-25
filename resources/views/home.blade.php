@@ -55,6 +55,7 @@
 
                             <div class="post-actions">
                                 <a href="{{ route('posts.show', $post->id) }}" class="post-action-link">Voir plus</a>
+                                <span class="likes-count">{{ $post->likes()->count() }} J'aime</span>
                             </div>
                         </div>
                     @empty
@@ -242,6 +243,8 @@
         }
 
         .post-actions {
+            display: flex;
+            justify-content: space-between;
             padding: 4px 8px;
             border-top: 1px solid var(--facebook-border);
             background: var(--facebook-light-blue);
