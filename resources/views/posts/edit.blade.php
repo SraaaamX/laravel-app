@@ -25,7 +25,7 @@
                     <label>Changer le media (Image/Vidéo)</label>
                     <input type="file" class="form-input @error('post_resource') is-invalid @enderror"
                         name="post_resource" accept="image/*,video/mp4">
-                    <small class="help-text">Formats acceptés: jpeg, png, jpg, gif, mp4. Taille max: 10MB</small>
+                    <small class="help-text">Formats acceptés: jpeg, png, jpg, gif, mp4, webp. Taille max: 10MB</small>
                     @error('post_resource')
                         <div class="error-text">{{ $message }}</div>
                     @enderror

@@ -56,7 +56,7 @@
                             <label>Photo de profil</label>
                             <input type="file" class="form-input @error('profile_pic') is-invalid @enderror"
                                 name="profile_pic" accept="image/*">
-                            <small class="help-text">Format JPG, PNG (max 2MB)</small>
+                            <small class="help-text">Format JPG, PNG, WEBP (max 2MB)</small>
                             @error('profile_pic')
                                 <div class="error-text">{{ $message }}</div>
                             @enderror

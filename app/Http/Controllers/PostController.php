@@ -9,59 +9,29 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth')->except(['randomPosts']);
     }
-
-    /**
-     * Display a random selection of posts on the home page.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function randomPosts()
     {
         $posts = Post::with('author')->latest()->paginate(3);
         return view('home', compact('posts'));
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $posts = Post::with('author')->latest()->get();
         return view('posts.index', compact('posts'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('posts.create');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
             'description' => 'required|string|max:1000',
-            'post_resource' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4|max:10240'
+            'post_resource' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webp|max:10240'
         ]);
 
         $post = new Post();
@@ -77,26 +47,12 @@ class PostController extends Controller
 
         return redirect()->route('profile')->with('success', 'Post created successfully.');
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $post = Post::with('author')->findOrFail($id);
         $comments = $post->comments()->with('user')->latest()->paginate(5);
         return view('posts.show', compact('post', 'comments'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $post = Post::findOrFail($id);
@@ -107,14 +63,6 @@ class PostController extends Controller
 
         return view('posts.edit', compact('post'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
@@ -125,7 +73,7 @@ class PostController extends Controller
 
         $request->validate([
             'description' => 'required|string|max:1000',
-            'post_resource' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4|max:10240'
+            'post_resource' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webp|max:10240'
         ]);
 
         $post->description = $request->description;
@@ -144,13 +92,6 @@ class PostController extends Controller
 
         return redirect()->route('profile')->with('success', 'Post updated successfully.');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
@@ -168,13 +109,6 @@ class PostController extends Controller
 
         return redirect()->route('profile')->with('success', 'Post deleted successfully.');
     }
-
-    /**
-     * Like or unlike a post
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function toggleLike($id)
     {
         $post = Post::findOrFail($id);
@@ -199,3 +133,6 @@ class PostController extends Controller
         return redirect()->back()->with('success', $message);
     }
 }
+
+
+

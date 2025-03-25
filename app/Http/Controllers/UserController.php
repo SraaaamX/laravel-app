@@ -37,7 +37,7 @@ class UserController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'bio' => 'nullable|string|max:1000',
-                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
             ]);
 
             $data = [
@@ -173,7 +173,7 @@ class UserController extends Controller
                 'username' => 'required|string|max:255|unique:users,username,' . $user->id,
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
                 'bio' => 'nullable|string|max:1000',
-                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
             ]);
 
             if ($validator->fails()) {
